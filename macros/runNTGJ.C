@@ -35,7 +35,7 @@ void runNTGJ(const char *run_mode = "full")
     };
 
     for (const char **p = package; *p != NULL; p++) {
-        if (strncmp(*p, "GCC::", 5) != 0) {
+        if (strncmp(*p, "GCC-", 4) != 0) {
             TString ps(*p);
             TString include = "$ALICE_ROOT/../../" +
                 ps.ReplaceAll("::", "/") + "/include";
@@ -90,8 +90,11 @@ void runNTGJ(const char *run_mode = "full")
     plugin->SetGridWorkingDir("workdir");
     plugin->SetGridOutputDir("outputdir");
 
-    plugin->SetAliROOTVersion("v5-09-11-1");
-    plugin->SetAliPhysicsVersion("v5-09-11-01-1");
+    // plugin->SetAliROOTVersion("v5-09-11-1");
+    // plugin->SetAliPhysicsVersion("v5-09-11-01-1");
+    // AliROOT v5-09-12-1, AliPhysics v5-09-12-01-1
+    plugin->SetAliROOTVersion("v5-09-12-1");
+    plugin->SetAliPhysicsVersion("v5-09-12-01-1");
     for (const char **p = package; *p != NULL; p++) {
         plugin->AddExternalPackage(*p);
     }
@@ -133,7 +136,7 @@ void runNTGJ(const char *run_mode = "full")
     };
 
     const int run_number_lhc16c2[] = {
-    
+
         180720,
 #if 0
         182692, 184215, 185687, 187488, 189616, 190393, 192073,
@@ -144,17 +147,26 @@ void runNTGJ(const char *run_mode = "full")
     };
 
     const int run_number_lhc16h2a_bis[] = {
-    
+
         246994,
 
         -1
     };
 
+    const int run_number_Jul2017_pp[] = {
+        274329,
+        -1
+    };
+
     const int *run_number;
 
-    plugin->SetGridDataDir("/alice/sim/2016/LHC16h2a_bis/1");
-    plugin->SetDataPattern("*/*/AliESDs.root");
-    run_number = run_number_lhc16h2a_bis;
+    // plugin->SetGridDataDir("/alice/sim/2016/LHC16h2a_bis/1");
+    plugin->SetGridDataDir("/alice/data/2017/LHC17i");
+    // plugin->SetDataPattern("*/*/AliESDs.root");
+    // remember the leading slash for data
+    plugin->SetDataPattern("/pass1/*/AliESDs.root");
+    plugin->SetRunPrefix("000");
+    run_number = run_number_Jul2017_pp; //run_number_lhc16h2a_bis;
 
     // plugin->SetGridDataDir("/alice/data/2015/LHC15o");
     // plugin->SetDataPattern("/pass1/*/AliESDs.root");
@@ -185,7 +197,7 @@ void runNTGJ(const char *run_mode = "full")
     plugin->SetRunMode(run_mode);
     mgr->SetGridHandler(plugin);
     gROOT->Macro("macros/AddAliAnalysisTaskNTGJ.C");
- 
+
     if (mgr->InitAnalysis()) {
         mgr->StartAnalysis("grid");
     }
