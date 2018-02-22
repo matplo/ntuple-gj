@@ -25,6 +25,8 @@
 #define NMC_TRUTH_MAX       (1U << 17)
 #define NJET_MAX            (1U << 17)
 
+#define CLUSTER_NMC_TRUTH_MAX 32
+
 class AliAnalysisTaskNTGJ : public AliAnalysisTaskSE {
 private:
     TString _emcal_geometry_name; //!
@@ -38,10 +40,15 @@ private:
     BRANCH_STR(version_jec)                                         \
     BRANCH_STR(grid_data_dir)                                       \
     BRANCH_STR(grid_data_pattern)                                   \
+    BRANCH(beam_energy, F)                                          \
     BRANCH_ARRAY(beam_particle, 2, I)                               \
     BRANCH(ntrigger_class, b)                                       \
     BRANCH_STR_ARRAY(trigger_class, ntrigger_class)                 \
     BRANCH(run_number, I)                                           \
+    BRANCH(period_number, i)                                        \
+    BRANCH(orbit_number, i)                                         \
+    BRANCH(bunch_crossing_number, s)                                \
+    BRANCH(time_stamp, i)                                           \
     /* */                                                           \
     BRANCH_ARRAY(trigger_mask, 2, l)                                \
     BRANCH_ARRAY(multiplicity_v0, 64, F)                            \
@@ -59,9 +66,11 @@ private:
     BRANCH_ARRAY(primary_vertex_spd, 3, D)                          \
     BRANCH_ARRAY(primary_vertex_spd_sigma, 3, D)                    \
     BRANCH(primary_vertex_spd_ncontributor, I)                      \
+    BRANCH(is_pileup_from_spd_3_08, O)                              \
+    BRANCH(is_pileup_from_spd_5_08, O)                              \
     BRANCH(npileup_vertex_spd, I)                                   \
-    BRANCH(pileup_vertex_spd_ncontributor, I)                       \
-    BRANCH(pileup_vertex_spd_min_z_distance, D)                     \
+    BRANCH(ncluster_tpc, I)                                         \
+    BRANCH(event_selected, O)                                       \
     BRANCH(eg_signal_process_id, I)                                 \
     BRANCH(eg_mpi, I)                                               \
     BRANCH(eg_pt_hat, F)                                            \
@@ -87,25 +96,41 @@ private:
     BRANCH_ARRAY2(cluster_lambda_square, ncluster, 2, F)            \
     BRANCH_ARRAY(cluster_tof, ncluster, F)                          \
     BRANCH_ARRAY(cluster_ncell, ncluster, I)                        \
+    BRANCH_ARRAY(cluster_nlocal_maxima, ncluster, b)                \
+    BRANCH_ARRAY(cluster_distance_to_bad_channel, ncluster, F)      \
     BRANCH_ARRAY(cluster_cell_id_max, ncluster, s)                  \
     BRANCH_ARRAY(cluster_e_max, ncluster, F)                        \
     BRANCH_ARRAY(cluster_e_cross, ncluster, F)                      \
     BRANCH_ARRAY(cluster_nmc_truth, ncluster, i)                    \
     BRANCH_ARRAY2(cluster_mc_truth_index, ncluster, 32, s)          \
     BRANCH_ARRAY(cluster_iso_tpc_01, ncluster, F)                   \
+    BRANCH_ARRAY(cluster_iso_tpc_01_ue, ncluster, F)                \
     BRANCH_ARRAY(cluster_iso_tpc_02, ncluster, F)                   \
+    BRANCH_ARRAY(cluster_iso_tpc_02_ue, ncluster, F)                \
     BRANCH_ARRAY(cluster_iso_tpc_03, ncluster, F)                   \
+    BRANCH_ARRAY(cluster_iso_tpc_03_ue, ncluster, F)                \
     BRANCH_ARRAY(cluster_iso_tpc_04, ncluster, F)                   \
+    BRANCH_ARRAY(cluster_iso_tpc_04_ue, ncluster, F)                \
     BRANCH_ARRAY(cluster_iso_its_01, ncluster, F)                   \
+    BRANCH_ARRAY(cluster_iso_its_01_ue, ncluster, F)                \
     BRANCH_ARRAY(cluster_iso_its_02, ncluster, F)                   \
+    BRANCH_ARRAY(cluster_iso_its_02_ue, ncluster, F)                \
     BRANCH_ARRAY(cluster_iso_its_03, ncluster, F)                   \
+    BRANCH_ARRAY(cluster_iso_its_03_ue, ncluster, F)                \
     BRANCH_ARRAY(cluster_iso_its_04, ncluster, F)                   \
+    BRANCH_ARRAY(cluster_iso_its_04_ue, ncluster, F)                \
     BRANCH_ARRAY(cluster_frixione_tpc_04_02, ncluster, F)           \
     BRANCH_ARRAY(cluster_frixione_tpc_04_05, ncluster, F)           \
     BRANCH_ARRAY(cluster_frixione_tpc_04_10, ncluster, F)           \
     BRANCH_ARRAY(cluster_frixione_its_04_02, ncluster, F)           \
     BRANCH_ARRAY(cluster_frixione_its_04_05, ncluster, F)           \
     BRANCH_ARRAY(cluster_frixione_its_04_10, ncluster, F)           \
+    BRANCH_ARRAY(cluster_anti_frixione_tpc_04_02, ncluster, F)      \
+    BRANCH_ARRAY(cluster_anti_frixione_tpc_04_05, ncluster, F)      \
+    BRANCH_ARRAY(cluster_anti_frixione_tpc_04_10, ncluster, F)      \
+    BRANCH_ARRAY(cluster_anti_frixione_its_04_02, ncluster, F)      \
+    BRANCH_ARRAY(cluster_anti_frixione_its_04_05, ncluster, F)      \
+    BRANCH_ARRAY(cluster_anti_frixione_its_04_10, ncluster, F)      \
     BRANCH_ARRAY(cluster_iso_01_truth, ncluster, F)                 \
     BRANCH_ARRAY(cluster_iso_02_truth, ncluster, F)                 \
     BRANCH_ARRAY(cluster_iso_03_truth, ncluster, F)                 \
@@ -113,10 +138,14 @@ private:
     BRANCH_ARRAY(cluster_frixione_04_02_truth, ncluster, F)         \
     BRANCH_ARRAY(cluster_frixione_04_05_truth, ncluster, F)         \
     BRANCH_ARRAY(cluster_frixione_04_10_truth, ncluster, F)         \
+    BRANCH_ARRAY(cluster_anti_frixione_04_02_truth, ncluster, F)    \
+    BRANCH_ARRAY(cluster_anti_frixione_04_05_truth, ncluster, F)    \
+    BRANCH_ARRAY(cluster_anti_frixione_04_10_truth, ncluster, F)    \
     BRANCH_ARRAY2(cluster_s_nphoton, ncluster, 4, F)                \
     BRANCH_ARRAY2(cluster_s_ncharged_hadron, ncluster, 4, F)        \
     BRANCH_ARRAY(cell_e, 17664, F)                                  \
     BRANCH_ARRAY(cell_tof, 17664, F)                                \
+    BRANCH_ARRAY(cell_cluster_index, 17664, s)                      \
     BRANCH_ARRAY(cell_mc_truth_index, 17664, s)                     \
     /* */                                                           \
     BRANCH(ntrack, i)                                               \
@@ -124,6 +153,8 @@ private:
     BRANCH_ARRAY(track_pt, ntrack, F)                               \
     BRANCH_ARRAY(track_eta, ntrack, F)                              \
     BRANCH_ARRAY(track_phi, ntrack, F)                              \
+    BRANCH_ARRAY(track_eta_emcal, ntrack, F)                        \
+    BRANCH_ARRAY(track_phi_emcal, ntrack, F)                        \
     BRANCH_ARRAY(track_charge, ntrack, B)                           \
     BRANCH_ARRAY(track_quality, ntrack, b)                          \
     BRANCH_ARRAY(track_tpc_dedx, ntrack, F)                         \
@@ -164,6 +195,12 @@ private:
     /* BRANCH_ARRAY(mc_truth_first_parent, nmc_truth, I) */         \
     /* BRANCH_ARRAY(mc_truth_first_child, nmc_truth, I) */          \
     /* BRANCH_ARRAY(mc_truth_second_child, nmc_truth, I) */         \
+    BRANCH_ARRAY(mc_truth_first_parent_pdg_code, nmc_truth, S)      \
+    BRANCH_ARRAY(mc_truth_first_parent_e, nmc_truth, F)             \
+    BRANCH_ARRAY(mc_truth_first_parent_pt, nmc_truth, F)            \
+    BRANCH_ARRAY(mc_truth_first_parent_eta, nmc_truth, F)           \
+    BRANCH_ARRAY(mc_truth_first_parent_phi, nmc_truth, F)           \
+    BRANCH_ARRAY(mc_truth_sibling_index, nmc_truth, s)              \
     BRANCH(debug_njet_ue_estimation, i)                             \
     BRANCH_ARRAY(debug_jet_ue_estimation_pt_raw,                    \
                  debug_njet_ue_estimation, F)                       \
@@ -301,7 +338,7 @@ private:
 #define BRANCH_STR(b)                           \
     char _branch_ ## b[BUFSIZ];
 #define BRANCH_STR_ARRAY(b, d)                  \
-    TClonesArray _branch_ ## b;
+    std::vector<std::string> _branch_ ## b;
 
     MEMBER_BRANCH;
 
@@ -345,6 +382,11 @@ private:
     AliMuonTrackCuts *_muon_track_cut; //!
 
     size_t _ncell; //!
+
+    std::string _emcal_geometry_filename; //!
+    std::string _emcal_local2master_filename; //!
+
+    bool _force_ue_subtraction; //!
     double _skim_cluster_min_e; //!
     double _skim_track_min_pt; //!
     double _skim_muon_track_min_pt; //!
@@ -359,9 +401,9 @@ private:
     std::vector<double> _emcal_cell_area; //!
     std::vector<std::set<size_t> > _emcal_cell_incident; //!
 
-	bool _load_intel_mklml; //!
-	void *_libiomp5; //!
-	void *_libmklml_gnu; //!
+    bool _load_intel_mklml; //!
+    void *_libiomp5; //!
+    void *_libmklml_gnu; //!
 
     void *_keras_model_photon_discrimination; //!
 
@@ -382,6 +424,12 @@ public:
     void SetGridDataDir(const char *dir);
     void SetGridDataPattern(const char *pattern);
     //
+    void SetEMCALGeometryFilename(const char *
+                                  emcal_geometry_filename);
+    void SetEMCALLocal2MasterFilename(const char *
+                                      emcal_local2master_filename);
+    //
+    void SetForceUESubtraction(bool force_ue_subtraction = true);
     void SetSkimClusterMinE(double min_e = -INFINITY);
     void SetSkimTrackMinPt(double min_pt = -INFINITY);
     void SetSkimMuonTrackMinPt(double min_pt = -INFINITY);
