@@ -58,27 +58,26 @@ void runNTGJ(const char *config_filename = "config/lhc16c2_1run.yaml",
     }
 
     // Load base root libraries
-    gSystem->Load("libTree");
-    gSystem->Load("libGeom");
-    gSystem->Load("libVMC");
-    gSystem->Load("libSTEERBase");
-    gSystem->Load("libPhysics");
-    gSystem->Load("libESD");
-    gSystem->Load("libAOD");
+    std::vector<std::string> _libs_to_load({
+        "libTree", "libGeom", "libVMC", "libSTEERBase", "libPhysics", "libESD", "libAOD",
+        // Load analysis framework libraries
+        "libANALYSIS", "libANALYSISalice",
+        "libEMCALUtils", "libPWGPPEMCAL",
+        "libCGAL", "libfastjet", "libsiscone", "libsiscone_spherical", "libfastjetplugins", "libfastjetcontribfragile"
+    });
+    for (auto & l : _libs_to_load) {
+        cout << "loading.. " << l << " " << gSystem->Load(l.c_str()) << endl;
+    }
 
-    // Load analysis framework libraries
-    gSystem->Load("libANALYSIS");
-    gSystem->Load("libANALYSISalice");
-
-    gSystem->Load("libEMCALUtils");
-    gSystem->Load("libPWGPPEMCAL");
-
-    gSystem->Load("libCGAL");
-    gSystem->Load("libfastjet");
-    gSystem->Load("libsiscone");
-    gSystem->Load("libsiscone_spherical");
-    gSystem->Load("libfastjetplugins");
-    gSystem->Load("libfastjetcontribfragile");
+    std::vector<std::string> macros({
+        "$ALICE_PHYSICS/OADB/COMMON/MULTIPLICITY/macros/AddTaskMultSelection.C",
+        "$ALICE_PHYSICS/PWG/EMCAL/macros/AddTaskEmcalCorrectionTask.C",
+        "$ALICE_PHYSICS/PWGPP/EMCAL/macros/ConfigureEMCALRecoUtils.C",
+        "$ALICE_PHYSICS/OADB/macros/AddTaskPhysicsSelection.C"
+    });
+    for (auto &m : macros) {
+        cout << "macro loading.. " << m << " " << gROOT->LoadMacro(m.c_str()) << endl;
+    }
 
     gROOT->ProcessLine(".L AliAnalysisTaskNTGJ.cxx+g");
 

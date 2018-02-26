@@ -33,19 +33,11 @@ AddAliAnalysisTaskNTGJ(TString name,
             __LINE__, skim_cluster_min_e);
 
     if (mult_selection) {
-        Int_t ierr = gROOT->LoadMacro("$ALICE_PHYSICS/OADB/COMMON/MULTIPLICITY/macros/AddTaskMultSelection.C");
-        if (ierr != 0)
-          cout << "unable to load AddTaskMultSelection.C" << endl;
-        else
           AliMultSelectionTask *mult_selection_task =
               AddTaskMultSelection(kFALSE);
     }
 
     if (emcal_correction_filename != "") {
-        Int_t ierr = gROOT->LoadMacro("$ALICE_PHYSICS/PWG/EMCAL/macros/AddTaskEmcalCorrectionTask.C");
-        if (ierr != 0)
-          cout << "unable to load AddTaskEmcalCorrectionTask.C" << endl;
-        else
           AliEmcalCorrectionTask *correction_task =
               AddTaskEmcalCorrectionTask();
 
@@ -56,10 +48,6 @@ AddAliAnalysisTaskNTGJ(TString name,
 
     AliEMCALRecoUtils *reco_util = task->GetEMCALRecoUtils();
 
-    Int_t ierr = gROOT->LoadMacro("$ALICE_PHYSICS/PWGPP/EMCAL/macros/ConfigureEMCALRecoUtils.C");
-    if (ierr != 0)
-      cout << "unable to load ConfigureEMCALRecoUtils.C" << endl;
-    else
       ConfigureEMCALRecoUtils(reco_util, kFALSE, kTRUE, kTRUE,
                               kFALSE, kFALSE, kFALSE);
 
@@ -68,10 +56,6 @@ AddAliAnalysisTaskNTGJ(TString name,
     reco_util->SwitchOnRunDepCorrection();
 
     if (physics_selection) {
-        Int_t ierr = gROOT->LoadMacro("$ALICE_PHYSICS/OADB/macrosAddTaskPhysicsSelection.C");
-        if (ierr != 0)
-          cout << "unable to load AddTaskPhysicsSelection.C" << endl;
-        else
           AliPhysicsSelectionTask* physics_selection_task =
               AddTaskPhysicsSelection(physics_selection_mc_analysis,
                                     physics_selection_pileup_cut);
@@ -89,7 +73,7 @@ AddAliAnalysisTaskNTGJ(TString name,
                                             kOutputContainer,
                                             filename.Data()));
 
-    AliAnalysisAlien *plugin = mgr->GetGridHandler();
+    AliAnalysisAlien *plugin = (AliAnalysisAlien*)mgr->GetGridHandler();
 
     if (plugin != NULL) {
         task->SetAliROOTVersion(plugin->GetAliROOTVersion());
