@@ -33,19 +33,21 @@ AddAliAnalysisTaskNTGJ(TString name,
             __LINE__, skim_cluster_min_e);
 
     if (mult_selection) {
-        gROOT->LoadMacro("$ALICE_PHYSICS/OADB/COMMON/MULTIPLICITY/"
-                         "macros/AddTaskMultSelection.C");
-
-        AliMultSelectionTask *mult_selection_task =
-            AddTaskMultSelection(kFALSE);
+        Int_t ierr = gROOT->LoadMacro("$ALICE_PHYSICS/OADB/COMMON/MULTIPLICITY/macros/AddTaskMultSelection.C");
+        if (ierr != 0)
+          cout << "unable to load AddTaskMultSelection.C" << endl;
+        else
+          AliMultSelectionTask *mult_selection_task =
+              AddTaskMultSelection(kFALSE);
     }
 
     if (emcal_correction_filename != "") {
-        gROOT->LoadMacro("$ALICE_PHYSICS/PWG/EMCAL/macros/"
-                         "AddTaskEmcalCorrectionTask.C");
-
-        AliEmcalCorrectionTask *correction_task =
-            AddTaskEmcalCorrectionTask();
+        Int_t ierr = gROOT->LoadMacro("$ALICE_PHYSICS/PWG/EMCAL/macros/AddTaskEmcalCorrectionTask.C");
+        if (ierr != 0)
+          cout << "unable to load AddTaskEmcalCorrectionTask.C" << endl;
+        else
+          AliEmcalCorrectionTask *correction_task =
+              AddTaskEmcalCorrectionTask();
 
         correction_task->SetUserConfigurationFilename(
             emcal_correction_filename.Data());
@@ -53,26 +55,28 @@ AddAliAnalysisTaskNTGJ(TString name,
     }
 
     AliEMCALRecoUtils *reco_util = task->GetEMCALRecoUtils();
-  
-    gROOT->LoadMacro("$ALICE_PHYSICS/PWGPP/EMCAL/macros/"
-                     "ConfigureEMCALRecoUtils.C");
-  
-    ConfigureEMCALRecoUtils(reco_util, kFALSE, kTRUE, kTRUE,
-                            kFALSE, kFALSE, kFALSE); 
+
+    Int_t ierr = gROOT->LoadMacro("$ALICE_PHYSICS/PWGPP/EMCAL/macros/ConfigureEMCALRecoUtils.C");
+    if (ierr != 0)
+      cout << "unable to load ConfigureEMCALRecoUtils.C" << endl;
+    else
+      ConfigureEMCALRecoUtils(reco_util, kFALSE, kTRUE, kTRUE,
+                              kFALSE, kFALSE, kFALSE);
 
     reco_util->SetNumberOfCellsFromEMCALBorder(0);
     reco_util->SwitchOnRecalibration();
     reco_util->SwitchOnRunDepCorrection();
 
     if (physics_selection) {
-        gROOT->LoadMacro("$ALICE_PHYSICS/OADB/macros/"
-                         "AddTaskPhysicsSelection.C");
-
-        AliPhysicsSelectionTask* physics_selection_task =
-            AddTaskPhysicsSelection(physics_selection_mc_analysis,
+        Int_t ierr = gROOT->LoadMacro("$ALICE_PHYSICS/OADB/macrosAddTaskPhysicsSelection.C");
+        if (ierr != 0)
+          cout << "unable to load AddTaskPhysicsSelection.C" << endl;
+        else
+          AliPhysicsSelectionTask* physics_selection_task =
+              AddTaskPhysicsSelection(physics_selection_mc_analysis,
                                     physics_selection_pileup_cut);
     }
-  
+
     TString filename = mgr->GetCommonFileName();
 
     filename += ":AliAnalysisTaskNTGJ";

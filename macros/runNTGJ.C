@@ -11,6 +11,10 @@ root=root; exec $root -l -b -q "$0($(join_by \",\" \"$*\" | \
 void runNTGJ(const char *config_filename = "config/lhc16c2_1run.yaml",
              const char *run_mode = "test")
 {
+    cout << "[i] config: " << config_filename << endl;
+    cout << "[i] run mode: " << run_mode << endl;
+
+    gROOT->ProcessLine(".include $PWD");
     gROOT->ProcessLine(".include $ROOTSYS/include");
     gROOT->ProcessLine(".include $ALICE_ROOT/include");
     gROOT->ProcessLine(".include $ALICE_PHYSICS/include");

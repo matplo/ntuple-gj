@@ -289,25 +289,23 @@ void AliAnalysisTaskNTGJ::UserCreateOutputObjects(void)
 
 #undef MEMBER_BRANCH
 
+#include <string>
+#include <vector>
+
 void AliAnalysisTaskNTGJ::UserExec(Option_t *option)
 {
     if (_emcal_geometry == NULL) {
-        const char *emcal_geometry_filename[] = {
+        std::vector<std::string> emcal_geometry_filename({
             "$ALICE_PHYSICS/OADB/EMCAL/geometry_2015.root",
             "/eos/experiment/alice/analysis-data/OADB/EMCAL/"
-            "geometry_2015.root",
-            "", // Replaced with the user configured value
-            NULL
-        };
+            "geometry_2015.root"});
 
-        for (const char **p = emcal_geometry_filename;
-             *p != NULL; p++) {
-            const char *s = p[0] == '\0' ?
-                _emcal_geometry_filename.c_str() : *p;
+        // emcal_geometry_filename.puch_back (""); // for the user defined path
 
+        for (auto &s : emcal_geometry_filename) {
             if (!gSystem->
-                AccessPathName(gSystem->ExpandPathName(s))) {
-                TGeoManager::Import(s);
+                AccessPathName(gSystem->ExpandPathName(s.c_str()))) {
+                TGeoManager::Import(s.c_str());
                 _emcal_geometry = AliEMCALGeometry::
                     GetInstance(_emcal_geometry_name);
                 break;
@@ -316,23 +314,16 @@ void AliAnalysisTaskNTGJ::UserExec(Option_t *option)
 
         AliOADBContainer emcal_geometry_container("emcal");
 
-        const char *emcal_local2master_filename[] = {
+        std::vector<std::string> emcal_local2master_filename({
             "$ALICE_PHYSICS/OADB/EMCAL/EMCALlocal2master.root",
             "/eos/experiment/alice/analysis-data/OADB/EMCAL/"
-            "EMCALlocal2master.root",
-            "", // Replaced with the user configured value
-            NULL
-        };
+            "EMCALlocal2master.root"});
 
-        for (const char **p = emcal_local2master_filename;
-             *p != NULL; p++) {
-            const char *s = p[0] == '\0' ?
-                _emcal_local2master_filename.c_str() : *p;
-
+        for (auto &s : emcal_geometry_filename) {
             if (!gSystem->
-                AccessPathName(gSystem->ExpandPathName(s))) {
+                AccessPathName(gSystem->ExpandPathName(s.c_str()))) {
                 emcal_geometry_container.
-                    InitFromFile(s, "AliEMCALgeo");
+                    InitFromFile(s.c_str(), "AliEMCALgeo");
                 break;
             }
         }
@@ -532,7 +523,7 @@ void AliAnalysisTaskNTGJ::UserExec(Option_t *option)
 
         // _track_cut.back().SetRequireITSStandAlone(kFALSE);
         _track_cut.back().SetRequireITSPureStandAlone(kTRUE);
-        // _track_cut.back().SetRequireITSRefit(kTRUE); 
+        // _track_cut.back().SetRequireITSRefit(kTRUE);
         // _track_cut.back().SetMinNClustersITS(4);
         // _track_cut.back().SetClusterRequirementITS(
         //  AliESDtrackCuts::kSPD, AliESDtrackCuts::kAny);
