@@ -399,7 +399,18 @@ void AliAnalysisTaskNTGJ::UserExec(Option_t *option)
 
     // filter on muoncalo ! - MP
     TString ts = InputEvent()->GetFiredTriggerClasses();
-    if (ts.Contains("MUONCALO") == kFALSE) {
+    if (ts.Contains("MUONCALO") == kFALSE &&
+        ts.Contains("CEMC7MSL") == kFALSE &&
+        ts.Contains("CDMC7MSL") == kFALSE &&
+        ts.Contains("CPHI7MSL") == kFALSE &&
+
+        ts.Contains("CEMC7MSH") == kFALSE &&
+        ts.Contains("CDMC7MSH") == kFALSE &&
+        ts.Contains("CPHI7MSH") == kFALSE &&
+
+        ts.Contains("CEMC7MUL") == kFALSE &&
+        ts.Contains("CDMC7MUL") == kFALSE &&
+        ts.Contains("CPHI7MUL") == kFALSE &&) {
         return;
     }
 
