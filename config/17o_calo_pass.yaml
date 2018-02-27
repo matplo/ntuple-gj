@@ -9,5 +9,5 @@ runNumber:          [281940, 281939, 281931, 281928, 281918, 281916, 281915, 281
 # https://alimonitor.cern.ch/configuration/index.jsp?partition=LHC17o&pass=-1&s=»&raw_run=&filling_scheme=&filling_config=&fillno=&energy=&intensity_per_bunch=&mu=&interacting_bunches=&noninteracting_bunches_beam_1=&noninteracting_bunches_beam_2=&interaction_trigger=&rate=&beam_empty_trigger=&empty_empty_trigger=&muon_trigger=&high_multiplicity_trigger=&emcal_trigger=&calibration_trigger=&quality=&muon_quality=1&physics_selection_status=&comment=&field=&det_aco=&det_ad0=&det_emc=1&det_fmd=&det_hlt=&det_hmp=&det_mch=1&det_mtr=1&det_phs=&det_pmd=&det_spd=1&det_sdd=&det_ssd=&det_tof=&det_tpc=&det_trd=&det_t00=&det_v00=&det_zdc=&hlt_mode=&changedon=
 # emcalCorrection:  emcal_correction.yaml
 emcalCorrection:
-splitMaxInputFileNumber:  200
+splitMaxInputFileNumber:  250
 storedJetMinPtRaw: 10
