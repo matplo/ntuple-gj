@@ -397,6 +397,12 @@ void AliAnalysisTaskNTGJ::UserExec(Option_t *option)
         return;
     }
 
+    // filter on muoncalo ! - MP
+    TString ts = InputEvent()->GetFiredTriggerClasses();
+    if (ts.Contains("MUONCALO") == kFALSE) {
+        return;
+    }
+
 #if 1
     if (event->GetRunNumber() != _run_number_current) {
         _run_number_current = event->GetRunNumber();
