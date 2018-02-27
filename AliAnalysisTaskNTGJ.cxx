@@ -410,7 +410,7 @@ void AliAnalysisTaskNTGJ::UserExec(Option_t *option)
 
         ts.Contains("CEMC7MUL") == kFALSE &&
         ts.Contains("CDMC7MUL") == kFALSE &&
-        ts.Contains("CPHI7MUL") == kFALSE &&) {
+        ts.Contains("CPHI7MUL") == kFALSE) {
         return;
     }
 
